@@ -1,0 +1,6 @@
+function rewrite_body(tag, timestamp, record)
+    record["body"] = {text={text="fluentbit " .. record["body"]}}
+    record["tags"] = {data={{key="LOG_KIND", value="SLOW_SQL"}}}
+    record["traceContext"] = {traceId=record["traceId"],traceSegmentId=record["traceSegmentId"],spanId=record["spanId"]}
+    return 1, timestamp, record
+end

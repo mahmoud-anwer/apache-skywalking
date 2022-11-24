@@ -1,0 +1,81 @@
+version: '2.1'
+
+services:
+  oap:
+    image: ghcr.io/apache/skywalking/oap:bcd9f7a56b99ca612711ed3a540bdae5f46e9171
+    expose:
+      - 11800
+      - 12800
+      - 10051
+      - 5005
+    ports:
+      - 12800
+    command:
+      - -c
+      - "chmod +x /skywalking/docker-entrypoint.sh"
+    entrypoint: ['sh', '-c', '/download-mysql.sh /skywalking/oap-libs && chmod 777 /skywalking/docker-entrypoint.sh && /skywalking/docker-entrypoint.sh']
+    volumes:
+            #- .conf/mysql-connector-j-8.0.31.jar:/skywalking/oap-libs
+      - ./conf/download-mysql.sh:/download-mysql.sh
+    networks:
+      - e2e
+    environment:
+      - TZ=Asia/Shanghai
+      - SW_STORAGE=mysql
+      - SW_DATA_SOURCE_USER=root
+      - SW_DATA_SOURCE_PASSWORD=password
+      - SW_JDBC_URL=jdbc:mysql://mysql:3306/swtest
+      - SW_CORE_TOPN_REPORT_PERIOD=2
+      - SW_OTEL_RECEIVER=default
+    healthcheck:
+      test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/11800"]
+      interval: 5s
+      timeout: 60s
+      retries: 120
+    depends_on:
+      mysql:
+        condition: service_healthy
+  ui:
+    image: ghcr.io/apache/skywalking/ui:4b88d85291b7cc5b442e2c020d34f4f58632544f
+    networks:
+      - e2e
+    ports:
+      - "80:8080"
+    depends_on:
+      oap:
+        condition: service_healthy
+    environment:
+      SW_OAP_ADDRESS: http://oap:12800
+
+  mysql:
+    image: mysql:8.0.13
+    networks:
+      - e2e
+    volumes:
+      - ./log:/var/lib/mysql
+      - ./conf/my.cnf:/etc/my.cnf
+    environment:
+      - "MYSQL_ROOT_PASSWORD=password"
+      - "MYSQL_DATABASE=swtest"
+    ports:
+      - 3306:3306
+    healthcheck:
+      test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/3306"]
+      interval: 5s
+      timeout: 60s
+      retries: 120
+  fluentbit:
+    image: fluent/fluent-bit:1.9
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./log:/tmp/skywalking-logs
+      - ./conf/fluentbit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+      - ./conf/fluentbit/fluent-bit-parser.conf:/fluent-bit/etc/fluent-bit-parser.conf
+      - ./conf/fluentbit/fluent-bit-script.lua:/fluent-bit/etc/fluent-bit-script.lua
+    networks:
+      - e2e
+    depends_on:
+      - mysql
+networks:
+  e2e:
