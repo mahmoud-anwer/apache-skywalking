@@ -1,61 +1,55 @@
---
--- Licensed to the Apache Software Foundation (ASF) under one or more
--- contributor license agreements.  See the NOTICE file distributed with
--- this work for additional information regarding copyright ownership.
--- The ASF licenses this file to You under the Apache License, Version 2.0
--- (the "License"); you may not use this file except in compliance with
--- the License.  You may obtain a copy of the License at
---
---     http://www.apache.org/licenses/LICENSE-2.0
---
--- Unless required by applicable law or agreed to in writing, software
--- distributed under the License is distributed on an "AS IS" BASIS,
--- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
--- See the License for the specific language governing permissions and
--- limitations under the License.
---
-
 function rewrite_body(tag, timestamp, record)
     log = record["log"]
     record["log"] = nil
     record["date"] = nil
     record["tags"] = {data={{key="LOG_KIND", value="SLOW_SQL"}}}
     arr = split(log,"\n")
+    print("arr[0]= ", arr[0])
+    print("arr[1]= ", arr[1])
+    print("arr[2]= ", arr[2])
+    print("arr[3]= ", arr[3])
+    print("arr[4]= ", arr[4])
+    print("arr[5]= ", arr[5])
+    print("arr[6]= ", arr[6])
+    print("arr[7]= ", arr[7])
     re1 = {}
     
+    -- TIME
+    -- (string.sub) from index '9' to the rest of the string
     time = string.sub(arr[1], 9)
     time = string.sub(time,1,19)
     time = string.gsub(time,"-","");
     time = string.gsub(time,"T","");
     time = string.gsub(time,":","");
+
     y1 = string.sub(time,1,4)
     m1 = string.sub(time,5,6)
     d1 = string.sub(time,7,8)
     h1 = string.sub(time,9,10)
     min1 = string.sub(time,11,12)
     s1 = string.sub(time,13,14)
+
     re1["time"] = os.time() * 1000
 
     re1["layer"] = "MYSQL"
     record["layer"] = "MYSQL"
-    id1,_ = string.find(arr[2],"Id:")
-    service = string.sub(arr[2],14,id1-1)
-    service = string.gsub(service," ","");
-    service = string.sub(service,1,10)
-    service = "mysql::"..service
+
+    -- To get the service name
+    -- I can replace all the following with 'service = "mysql::db"'
     service = "mysql::db"
     record["service"]=service
     re1["service"]= service
 
-    f1,_ = string.find(arr[3],"Lock")
-    query_time = string.sub(arr[3],15,f1-3)
+    f1,_ = string.find(arr[4],"Lock")
+    query_time = string.sub(arr[4],15,f1-3)
+    print("query_time= ", query_time)
     local qt,_ = math.modf(query_time*1000)
     re1["query_time"] = qt
     re1["statement"] = ""
 
     re1["id"] = uuid()
 
-    for i=4,#arr,1 do
+    for i=6,#arr,1 do
         re1["statement"] = re1["statement"]..arr[i]
     end
     jsonstr = table2json(re1)
@@ -114,5 +108,3 @@ function table2json(t)
   assert(type(t) == "table")
   return serialize(t)
 end
-
-

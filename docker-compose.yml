@@ -52,18 +52,28 @@ services:
     networks:
       - e2e
     volumes:
-      - ./log:/var/lib/mysql
+     #- ./log:/var/lib/mysql
       - ./conf/my.cnf:/etc/my.cnf
     environment:
       - "MYSQL_ROOT_PASSWORD=password"
       - "MYSQL_DATABASE=swtest"
-    ports:
-      - 3306:3306
     healthcheck:
       test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/3306"]
       interval: 5s
       timeout: 60s
       retries: 120
+
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb
+    networks:
+      - e2e
+    volumes:
+     - ./log:/var/lib/mysql
+     - ./conf/mariadb.cnf:/etc/mysql/my.cnf
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+
   fluentbit:
     image: fluent/fluent-bit:1.9
     environment:
