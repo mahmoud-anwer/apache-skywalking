@@ -1,0 +1,6 @@
+# Time: 200929 15:42:35
+# User@Host: root[root] @  [192.168.1.1]
+# Thread_id: 2332  Schema: parkcloud_performancetest  QC_hit: No
+# Query_time: 10.93443  Lock_time: 0.000091  Rows_sent: 5  Rows_examined: 9022
+# Rows_affected: 0
+SET timestamp=xxxxxxxxxx;
