@@ -4,14 +4,6 @@ function rewrite_body(tag, timestamp, record)
     record["date"] = nil
     record["tags"] = {data={{key="LOG_KIND", value="SLOW_SQL"}}}
     arr = split(log,"\n")
-    print("arr[0]= ", arr[0])
-    print("arr[1]= ", arr[1])
-    print("arr[2]= ", arr[2])
-    print("arr[3]= ", arr[3])
-    print("arr[4]= ", arr[4])
-    print("arr[5]= ", arr[5])
-    print("arr[6]= ", arr[6])
-    print("arr[7]= ", arr[7])
     re1 = {}
     
     time = string.sub(arr[1], 9)
