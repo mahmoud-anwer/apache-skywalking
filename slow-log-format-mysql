@@ -1,0 +1,4 @@
+# Time: 141004 12:30:47
+# User@Host: dbuser[dbuser] @ localhost [127.0.0.1]  Id:  1959
+# Query_time: 0.017325  Lock_time: 0.000112 Rows_sent: 75  Rows_examined: 22146
+SET timestamp=1412413247;
