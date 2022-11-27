@@ -14,8 +14,6 @@ function rewrite_body(tag, timestamp, record)
     print("arr[7]= ", arr[7])
     re1 = {}
     
-    -- TIME
-    -- (string.sub) from index '9' to the rest of the string
     time = string.sub(arr[1], 9)
     time = string.sub(time,1,19)
     time = string.gsub(time,"-","");
@@ -34,8 +32,6 @@ function rewrite_body(tag, timestamp, record)
     re1["layer"] = "MYSQL"
     record["layer"] = "MYSQL"
 
-    -- To get the service name
-    -- I can replace all the following with 'service = "mysql::db"'
     service = "mysql::db"
     record["service"]=service
     re1["service"]= service

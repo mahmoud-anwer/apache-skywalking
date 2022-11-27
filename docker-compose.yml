@@ -10,12 +10,8 @@ services:
       - 5005
     ports:
       - 12800
-    command:
-      - -c
-      - "chmod +x /skywalking/docker-entrypoint.sh"
     entrypoint: ['sh', '-c', '/download-mysql.sh /skywalking/oap-libs && chmod 777 /skywalking/docker-entrypoint.sh && /skywalking/docker-entrypoint.sh']
     volumes:
-            #- .conf/mysql-connector-j-8.0.31.jar:/skywalking/oap-libs
       - ./conf/download-mysql.sh:/download-mysql.sh
     networks:
       - e2e
@@ -51,9 +47,6 @@ services:
     image: mysql:8.0.13
     networks:
       - e2e
-    volumes:
-     #- ./log:/var/lib/mysql
-      - ./conf/my.cnf:/etc/my.cnf
     environment:
       - "MYSQL_ROOT_PASSWORD=password"
       - "MYSQL_DATABASE=swtest"
@@ -86,6 +79,6 @@ services:
     networks:
       - e2e
     depends_on:
-      - mysql
+      - mariadb
 networks:
   e2e:
