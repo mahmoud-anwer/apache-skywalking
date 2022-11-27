@@ -38,11 +38,11 @@ function rewrite_body(tag, timestamp, record)
 
     re1["layer"] = "MYSQL"
     record["layer"] = "MYSQL"
-    id1,_ = string.find(arr[2],"Id:")
-    service = string.sub(arr[2],14,id1-1)
-    service = string.gsub(service," ","");
-    service = string.sub(service,1,10)
-    service = "mysql::"..service
+    -- id1,_ = string.find(arr[2],"Id:")
+    -- service = string.sub(arr[2],14,id1-1)
+    -- service = string.gsub(service," ","");
+    -- service = string.sub(service,1,10)
+    -- service = "mysql::"..service
     service = "mysql::db"
     record["service"]=service
     re1["service"]= service
